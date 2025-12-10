@@ -1,0 +1,23 @@
+name: Deploy to WP Engine
+on:
+  push:
+    branches:
+     - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  
+    environment: production
+    steps: 
+    - uses: actions/checkout@v2
+    - name: GitHub Action Deploy to WP Engine
+      uses: wpengine/github-action-wpe-site-deploy@v3
+      with:
+      # Deploy vars 
+        WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
+        WPE_ENV: ${{ secrets.WPE_ENV }} 
+        # Deploy Options
+        SRC_PATH: "."
+        REMOTE_PATH: "wp-content/themes/hello-theme-child-master"
+        PHP_LINT: TRUE
+        FLAGS: -azvr --inplace --delete --exclude=.*
+        CACHE_CLEAR: TRUE
