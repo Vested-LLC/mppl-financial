@@ -37,7 +37,7 @@ while (have_posts()) :
                     <?php the_content(); ?>
                     <?php if (get_field('disclaimer')): ?>
                         <div class="entry-content__right__disclaimer">
-                            <?php the_field('disclaimer'); ?>
+                            <em>No client or potential client should assume that any information presented or made available on or through this article should be construed as personalized financial planning or investment advice. Personalized financial planning and investment advice can only be rendered after engagement of the firm for services, execution of the required documentation, and receipt of required disclosures. Please consult legal or tax professionals for specific information regarding your individual situation.</em>
                         </div>
                     <?php endif; ?>
                     <!-- Back to Insights Button -->
