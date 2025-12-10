@@ -1,0 +1,288 @@
+@use "mixins";
+@use "variables";
+
+#filters {
+    display: flex;
+    --gap: 20px;
+    gap: var(--gap);
+    margin-bottom: 40px;
+    @include mixins.mq-down-md() {
+        --gap: 10px;
+        padding: 20px;
+        box-shadow: variables.$box-shadow;
+        border-radius: 10px;
+        .filter-group {
+            p {
+                font-size: 21px;
+            }
+            &.dropdown {
+                > button {
+                    padding: 10px;
+                    background-color: transparent;
+                    color: variables.$text-secondary;
+                    border: 1px solid variables.$text-secondary;
+                    border-radius: 0;
+                    font-size: 16px;
+                    &:after {
+                        background-color: variables.$text-secondary;
+                        right: 10px;
+                    }
+                }
+                &.js-active {
+                    > button {
+                        border-bottom: 0;
+                        border-color: variables.$gray-400!important;
+                    }
+                }
+                ul.filter {
+                    color: variables.$text-secondary;
+                    background-color: variables.$white;
+                    top: calc(100% + 15px);
+                    padding: 0 10px 10px;
+                    border: 1px solid variables.$gray-400;
+                    border-top: 0;
+                    li {
+                        button {
+                            color: variables.$text-secondary;
+                            font-size: 16px;
+                            &:focus {
+                                // outline: 1px solid variables.$text-secondary;
+                            }
+                            &:hover, &:focus {
+                                color: variables.$text-secondary;
+                                background-color: transparent;
+                            }
+                        }
+                        
+                        &.js-active {
+                            button {
+                                color: variables.$text-secondary;
+                                background: rgba(2, 40, 83, .05);
+                                border-radius: 10px;
+                                padding-left: 10px;
+                                padding-right: 10px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @include mixins.mq-up-md() {
+        .filter-group {
+            p {
+                font-size: 24px;
+            }
+            &.dropdown {
+                &.js-active {
+                    > button {
+                        border-bottom: 0;
+                    }
+                }
+                > button {
+                    padding: 10px;
+                    background-color: variables.$white;
+                    color: variables.$text-secondary;
+                    border: 0;
+                    border-radius: 0;
+                    border: 1px solid variables.$gray-400;
+                    &:after {
+                        background-color: variables.$text-secondary;
+                        right: 8px;
+                    }
+                }
+                ul.filter {
+                    color: variables.$text-secondary;
+                    background-color: variables.$white; 
+                    padding: 0 10px 0;
+                    border-radius: 0;
+                    border-left: 1px solid variables.$primary;
+                    border-right: 1px solid variables.$primary;
+                    border-bottom: 1px solid variables.$primary;
+                    li {
+                        &:first-child {
+                            margin-top: 0;
+                        }
+                        button {
+                            color: variables.$text-secondary;
+                            border-color: variables.$primary;
+                            &:focus {
+                                // outline: 1px solid variables.$gray-400;
+                            }
+                            &:hover, &:focus {
+                                color: variables.$primary;
+                                background-color: transparent;
+                                border-color: variables.$primary;
+                            }
+                        }
+                    }  
+                }
+            }
+        }
+    }
+    &.two-col {
+        @include mixins.mq-up-md() {
+            flex-direction: row;
+            .filter-group {
+                --columns: 3;
+                flex-basis: calc((100% / var(--columns)) - (var(--gap) * (var(--columns) - 1) / var(--columns)));    
+            }
+        }
+        @media (min-width: 576px) and (max-width: 767px) {
+            flex-direction: row;
+            .filter-group {
+                --columns: 2;
+                flex-basis: calc((100% / var(--columns)) - (var(--gap) * (var(--columns) - 1) / var(--columns)));    
+            }
+        }
+        @include mixins.mq-down-sm() {
+            flex-direction: column;
+            .filter-group {
+                width: 100%;
+                
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .filter-group {
+                flex-grow: 1;
+            }
+        }
+    }
+
+    .filter-group {
+        position: relative;
+        p {
+            font-weight: variables.$font-weight-bold;
+            line-height: 1.25;
+            color: variables.$primary;
+            margin-bottom: 10px;
+        }
+        &.dropdown {
+            @include mixins.transition-all(0.3s);
+            &.js-active {
+                > button {
+                    color: variables.$text-secondary;
+                    background-color: variables.$white;
+                    border-color: variables.$primary;
+                    &:focus {
+                        // border: 2px solid variables.$gray-400;
+                        // outline: 0;
+                    }
+                    &:hover,
+                    &:focus {
+                    }
+                    &:after {
+                        transform: translateY(-50%) scaleY(-1);
+                    }
+                }
+
+                ul.filter {
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: all;
+                    z-index: 1002;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    li {
+                        button {
+                            &.js-active {
+                                background: rgba(2, 40, 83, .06);
+                                border-radius: 8px;
+                                padding-left: 10px;
+                                padding-right: 10px;   
+                            }
+                        }
+                    }
+                }
+            }
+            > button {
+                position: relative;
+                display: block;
+                text-align: start;
+                width: 100%;
+                font-size: 18px;
+                line-height: normal;
+                @include mixins.transition-all(0.3s);
+                z-index: 1000;
+                &:focus {
+                    // outline: 1px solid variables.$gray-400;
+                }
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 24px;
+                    height: 24px;
+                    mask-image: url(/wp-content/uploads/2025/02/arrow-down.svg);
+                    mask-size: contain;
+                    mask-repeat: no-repeat;
+                    @include mixins.transition-all(0.3s);
+                }
+
+                &:hover {
+                    color: variables.$primary;
+                    &:after {
+                        transform: translateY(-50%) scaleY(-1);
+                    }
+                }
+            }
+
+            ul.filter {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: calc(100% - 1px);
+                border-radius: 0;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                @include mixins.transition-all(0.3s);
+                &#employees-filter {
+                    display: flex;
+                    flex-direction: column;
+                    li {
+                        &:nth-child(2) {
+                            order: 5;
+                        }
+                        &:nth-child(3) {
+                            order: 2;
+                        }   
+                        &:nth-child(4) {
+                            order: 3;
+                        }
+                        &:nth-child(5) {
+                            order: 4;
+                        }
+                    }
+                }
+                li {
+                    list-style-type: none;
+                    &:last-child {
+                        button {
+                            margin-bottom: 0;
+                        }
+                    }
+                    button {
+                        display: block;
+                        text-align: left;
+                        width: 100%;
+                        font-size: 18px;
+                        padding: 6px 0 5px;
+                        margin: 5px 0;
+                        border: 0;
+                        border-radius: 0;
+                        white-space: normal;
+                        cursor: pointer;
+                        @include mixins.transition-all(0.35s);
+                        &:hover, &:focus {
+                        }
+                        @include mixins.mq-down-lg() {
+                            color: variables.$text-secondary;    
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

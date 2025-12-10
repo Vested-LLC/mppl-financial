@@ -1,0 +1,164 @@
+@use "variables";
+@use "mixins";
+
+// main {
+//     position: relative;
+//     z-index: 1;
+//     min-height: 100vh;
+// }
+
+body.js-fixed {
+    overflow: hidden;
+}
+
+html {
+    scroll-padding-top: 100px;
+}
+
+// .fadeInUp {
+//     transform: translateY(30px);
+//     transition: opacity 0.4s ease-in-out;
+//     &.js-visible {
+//         transform: translateY(0);
+//     }
+// }
+
+.full-width-xxl {
+    @include mixins.mq-up-xxl() {
+        .e-con-inner {
+            max-width: none!important;
+        }
+    }
+}
+
+.glass-blur-fallback {
+    background-color: rgba(255, 255, 255, 0.75)!important;
+    @supports(backdrop-filter: blur(15px)) {
+        background-color: rgba(255, 255, 255, 0.27)!important;
+        backdrop-filter: blur(15px)!important;
+    }
+}
+
+.square-img {
+    img {
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+}
+
+.fade-in, .js-init {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.fade-in.js-visible, .js-initialized {
+    opacity: 1;
+}
+
+.sticky-col-lg {
+    @include mixins.mq-up-lg() {
+        position: sticky!important;
+        top: 120px;
+    }
+}
+
+.box-shadow {
+    box-shadow: variables.$box-shadow;
+}
+
+.elementor-button-wrapper {
+    .elementor-button {
+        .elementor-button-text {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
+.elementor {
+    
+    a {
+        color: inherit;
+        &:hover {
+            color: inherit;
+        }
+    }
+
+    .bg-primary-down-md {
+        @include mixins.mq-down-md() {
+            background-color: variables.$primary!important;
+        }
+    }
+
+    .abs-image {
+        width: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        &.md {
+            @include mixins.mq-down-md() {
+                position: relative!important;
+            }
+        }
+    }
+
+    .sr-only {
+        display: none!important;
+    }
+    
+    .link-underline {
+        a {
+            text-decoration: underline!important;
+            &:hover {
+                text-decoration: none!important;
+            }
+        }
+    }
+    
+    .spacing-xl {
+        padding-top: variables.$spacing-xl!important;
+        padding-bottom: variables.$spacing-xl!important;
+    }
+    
+    .spacing-xl-top {
+        padding-top: variables.$spacing-xl!important;
+    }
+    
+    .spacing-xl-bottom {
+        padding-bottom: variables.$spacing-xl!important;
+    }
+
+    .spacing-lg {
+        padding-top: variables.$spacing-lg!important;
+        padding-bottom: variables.$spacing-lg!important;
+    }
+    
+    .spacing-lg-top {
+        padding-top: variables.$spacing-lg!important;
+    }
+    
+    .spacing-lg-bottom {
+        padding-bottom: variables.$spacing-lg!important;
+    }
+    .two-col-list {
+        ul {
+            @include mixins.mq-up-lg() {
+                column-count: 2;
+            }
+        }
+    }
+    .elementor-button-wrapper {
+        display: flex;
+    }
+    .elementor-widget-text-editor {
+        ul {
+            padding-left: 26px;
+            li {
+                &:not(:last-child) {
+                    margin-bottom: 15px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,28 @@
+@use "variables";
+@use "mixins";
+
+.home #hero {
+    @include mixins.mq-down-md() {
+        .page-title {
+            background-color: variables.$primary;
+            h1, p {
+                color: variables.$white;
+            }
+        }
+        &.location-hero {
+            .e-con-inner {
+                .location-image {
+                    order:2
+                }
+                .location-content {
+                    order: 1;
+                }
+                .location-map {
+                    order: 3;
+                    background-color: variables.$white;
+                }
+            }
+        }
+    }
+    
+}

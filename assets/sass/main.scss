@@ -1,0 +1,17 @@
+@use "_variables";
+@use "_mixins";
+@use "_helpers";
+@use "_cms";
+@use "_header";
+@use "_footer";
+@use "_buttons";
+@use "_filters";
+@use "_banners";
+@use "_forms";
+@use "_popups";
+@use "_subpages";
+@use "_single-post";
+
+body {
+    overflow-x: hidden;
+}
