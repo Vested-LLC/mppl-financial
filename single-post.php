@@ -24,7 +24,7 @@ while (have_posts()) :
                     <?php the_post_thumbnail('full', array('class' => 'entry-content__left__featured-image__image')); ?>
                  </div>
                  <!-- Share -->
-                  <?php echo do_shortcode('[elementor-template id="5927"]'); ?>
+                  <?php echo do_shortcode('[elementor-template id="6191"]'); ?>
             </div>
             <div class="entry-content__right">
                 <div class="entry-content__right__title">
