@@ -28,6 +28,9 @@
                         margin: 20px 0;
                     }
                     &__content {
+                        p {
+                            margin-block-end: 16px;
+                        }
                         a {
                             color: inherit;
                             &:hover {
@@ -62,6 +65,9 @@
                                     transform: scale(1.05);
                                 }
                             }
+                        }
+                        ul {
+                            margin-block-end: 24px;
                         }
                     }
                     &__disclaimer {
