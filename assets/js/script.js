@@ -10,6 +10,11 @@ window.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.phone-link .elementor-widget-container').appendChild(a);
     }
 
+    const scheduleButtons = document.querySelectorAll('.schedule-btn');
+    scheduleButtons.forEach(function (button) {
+        button.querySelector('a').setAttribute('href', `/schedule-a-call/?ref_location${window.location.pathname.split('/')[2]}`);
+    });
+
     function autoplaySliders(selector, speed) {
         const sliders = document.querySelectorAll(selector);
 

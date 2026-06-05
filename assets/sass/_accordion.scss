@@ -1,0 +1,146 @@
+@use "variables";
+@use "mixins";
+
+.accordion {
+    .accordion {
+        &__item {
+            background-color: variables.$white;
+            border: 1px solid variables.$primary;
+            border-radius: variables.$border-radius;
+            margin-block-end: 5px;
+            &:last-child {
+                margin-block-end: 0;
+            }
+        }
+    
+        &__header {
+            margin: 0;
+            padding: 0;
+        }
+    
+        &__button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+            padding: 20px!important;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            color: variables.$primary;
+            white-space: normal;
+    
+            &:focus-visible {
+                outline: 2px solid variables.$primary;
+                outline-offset: 3px;
+            }
+    
+            &:hover, &:focus {
+                background-color: variables.$white;
+            }  
+    
+            &[aria-expanded="false"] {
+                &:hover, &:focus {
+                    .accordion {
+                        &__icon {
+                            &-chevron {
+                                transform: rotate(180deg) scale(1.1);
+                            }
+                        }
+                    }
+                }
+            }
+    
+            &[aria-expanded="true"] {
+                .accordion__icon-chevron {
+                    opacity: 0;
+                    transform: rotate(45deg);
+                }
+    
+                .accordion__icon-close {
+                    opacity: 1;
+                    transform: rotate(0deg);
+                }
+            }
+        }
+    
+        &__title {
+            font-family: inherit;
+            font-size: 23px;
+            font-weight: variables.$font-weight-bold;
+            color: variables.$primary;
+            line-height: 1.4;
+        }
+    
+        &__icon {
+            flex-shrink: 0;
+            position: relative;
+            width: 24px;
+            height: 24px;
+            color: variables.$primary;
+    
+            &-chevron,
+            &-close {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                transition: opacity 0.35s ease, transform 0.35s ease;
+    
+                @media (prefers-reduced-motion: reduce) {
+                    transition: none;
+                }
+            }
+    
+            &-chevron {
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+    
+            &-close {
+                opacity: 0;
+                transform: rotate(-45deg);
+            }
+        }
+    
+        &__panel {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+    
+            &[hidden] {
+                display: block;
+                max-height: 0;
+            }
+    
+            @media (prefers-reduced-motion: reduce) {
+                transition: none;
+            }
+        }
+    
+        &__content {
+            padding: 0 20px 20px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: variables.$text-secondary;
+    
+            p:last-child {
+                margin-bottom: 0;
+            }
+        }
+    
+        @include mixins.mq-down-lg {
+            &__title {
+                font-size: 18px;
+            }
+        }
+    }
+}
+
+

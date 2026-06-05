@@ -434,11 +434,49 @@ ul.social-icons {
     }
 }
 
+.location-sections, .location-why {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    --columns: 3;
+    gap: var(--gap);
+    .location-section {
+        padding: 20px 20px 40px 20px;
+        box-shadow: variables.$box-shadow;
+        border-radius: variables.$border-radius;
+    }
+    .location-section, .location-why-item {
+        flex-basis: calc((100% / var(--columns)) - (var(--gap) * (var(--columns) - 1) / var(--columns)));
+        @media (min-width: 576px) and (max-width: 1024px) {
+            --columns: 2;
+            h3 {
+                font-size: 23px;
+            }
+            p {
+                font-size: 16px;
+            }
+        }
+        @include mixins.mq-down-sm() {
+            --columns: 1;
+        }
+    }
+    @include mixins.mq-down-lg() {
+        --gap: 20px;
+        gap: var(--gap);
+    }
+}
+
 .location-sections {
-    @media (min-width: 767px) and (max-width: 1024px) {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px 40px;
+    --gap: 40px;
+}
+
+.location-why {
+    --gap: 110px;
+    @media (min-width: 1024px) and (max-width: 1440px) {
+        --gap: 60px;
+    }
+    @include mixins.mq-down-lg() {
+        --gap: 40px;
     }
 }
 
