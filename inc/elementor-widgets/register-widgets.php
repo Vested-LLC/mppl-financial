@@ -8,7 +8,7 @@ function register_custom_elementor_widgets($widgets_manager) {
     require_once get_stylesheet_directory() . '/inc/elementor-widgets/location-services-widget.php';
     require_once get_stylesheet_directory() . '/inc/elementor-widgets/location-why-choose-widget.php';
     require_once get_stylesheet_directory() . '/inc/elementor-widgets/slider-widget.php';
-    require_once get_stylesheet_directory() . '/inc/accordion-widget.php';
+    require_once get_stylesheet_directory() . '/inc/elementor-widgets/accordion-widget.php';
 
     $widgets_manager->register(new \Team_Content_Widget());
     $widgets_manager->register(new \Team_Member_Locations_Content_Widget());

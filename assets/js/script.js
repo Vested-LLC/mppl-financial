@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const scheduleButtons = document.querySelectorAll('.schedule-btn');
     scheduleButtons.forEach(function (button) {
-        button.querySelector('a').setAttribute('href', `/schedule-a-call/?ref_location${window.location.pathname.split('/')[2]}`);
+        button.querySelector('a').setAttribute('href', `/schedule-a-call/?ref_location=${window.location.pathname.split('/')[2]}`);
     });
 
     function autoplaySliders(selector, speed) {
@@ -774,6 +774,15 @@ window.addEventListener('DOMContentLoaded', function () {
         openMenu();
     });
     closeBtn.addEventListener("click", closeMenu);
+
+    // Close the menu on any click outside of the main nav
+    var navInner = navWrapper.querySelector('.nav-inner');
+    document.addEventListener("click", function (e) {
+        if (!navWrapper.classList.contains("js-show")) return;
+        if (navInner.contains(e.target)) return;
+        if (openBtn.contains(e.target)) return;
+        closeMenu();
+    });
 
     // Keyboard navigation: trap focus inside the menu when open
     menu.addEventListener("keydown", function (e) {
