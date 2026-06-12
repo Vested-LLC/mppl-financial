@@ -15,6 +15,11 @@ window.addEventListener('DOMContentLoaded', function () {
         button.querySelector('a').setAttribute('href', `/schedule-a-call/?ref_location=${window.location.pathname.split('/')[2]}`);
     });
 
+    const locationButtons = document.querySelectorAll('.location-btn');
+    locationButtons.forEach(function (button) {
+        button.querySelector('span.location-name').textContent = window.location.pathname.split('/')[2].split('-')[0];
+    });
+
     function autoplaySliders(selector, speed) {
         const sliders = document.querySelectorAll(selector);
 
@@ -806,6 +811,79 @@ window.addEventListener('DOMContentLoaded', function () {
             closeMenu();
         }
     });
+
+    // TrustIndex rating footer — restructure into score + stars + review count
+    const formatTrustindexFooter = (footer) => {
+        if (!footer || footer.classList.contains('js-formatted')) { return; }
+
+        const ratingText = footer.querySelector('.ti-rating-text');
+        if (!ratingText) { return; }
+
+        // Read just the rating value (e.g. "5.0"), independent of span order
+        let score = '';
+        ratingText.querySelectorAll('strong').forEach((strong) => {
+            const value = strong.textContent.trim();
+            if (!score && /^\d+(\.\d+)?$/.test(value)) {
+                score = value;
+            }
+        });
+        if (!score) { return; }
+
+        const reviewsLink = ratingText.querySelector('a');
+
+        // Large rating score
+        const scoreEl = document.createElement('span');
+        scoreEl.className = 'ti-rating-score';
+        scoreEl.textContent = score;
+
+        // Star row (5 full stars)
+        const starsEl = document.createElement('div');
+        starsEl.className = 'ti-rating-stars';
+        starsEl.setAttribute('role', 'img');
+        starsEl.setAttribute('aria-label', `${score} out of 5 stars`);
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement('img');
+            star.src = 'https://cdn.trustindex.io/assets/platform/Google/star/f.svg';
+            star.alt = '';
+            star.width = 20;
+            star.height = 20;
+            star.setAttribute('aria-hidden', 'true');
+            starsEl.appendChild(star);
+        }
+
+        // Review count
+        const countEl = document.createElement('div');
+        countEl.className = 'ti-rating-count';
+        if (reviewsLink) {
+            const a = document.createElement('a');
+            a.href = reviewsLink.href;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.textContent = reviewsLink.textContent.trim();
+            countEl.append('Based on ', a);
+        } else {
+            countEl.textContent = 'Based on reviews';
+        }
+
+        ratingText.textContent = '';
+        ratingText.append(scoreEl, starsEl, countEl);
+        footer.classList.add('js-formatted');
+    };
+
+    const initTrustindexFooters = () => {
+        document.querySelectorAll('.ti-footer:not(.js-formatted)').forEach(formatTrustindexFooter);
+    };
+
+    initTrustindexFooters();
+
+    // The widget is lazyloaded, so watch for its markup and format it once it appears
+    const tiObserver = new MutationObserver(() => {
+        initTrustindexFooters();
+        if (document.querySelector('.ti-footer') && !document.querySelector('.ti-footer:not(.js-formatted)')) {
+            tiObserver.disconnect();
+        }
+    });
+    tiObserver.observe(document.body, { childList: true, subtree: true });
 
     const captchaLabels = document.querySelectorAll('.gfield--type-captcha label');
     captchaLabels.forEach(function(label) {

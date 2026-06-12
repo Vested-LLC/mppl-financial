@@ -33,4 +33,13 @@
     &:hover, &:focus {
         transform: scale(1.05);
     }
+    
+}
+
+// View All [location_name] Buttons on Location Pages
+.location-btn {
+    span.location-name {
+        margin: 0 5px;
+        text-transform: capitalize;
+    }
 }

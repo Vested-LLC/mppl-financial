@@ -465,6 +465,11 @@ footer .footer-social li a.facebook:after {
   transform: scale(1.05);
 }
 
+.location-btn span.location-name {
+  margin: 0 5px;
+  text-transform: capitalize;
+}
+
 .accordion .accordion__item {
   background-color: #FFF;
   border: 1px solid var(--e-global-color-primary);
@@ -1843,6 +1848,54 @@ ul.social-icons li a.instagram:after {
 
 .elementor-widget-theme-post-content ul, .elementor-widget-theme-post-content ol {
   margin-bottom: 30px;
+}
+
+.ti-widget[data-layout-id="16"] .ti-widget-container {
+  display: flex !important;
+  gap: 32px !important;
+  flex-direction: column;
+}
+.ti-widget[data-layout-id="16"] .ti-widget-container .ti-reviews-container {
+  order: 2;
+}
+.ti-widget[data-layout-id="16"] .ti-widget-container .ti-footer {
+  order: 1;
+  padding-bottom: 32px !important;
+}
+.ti-widget .ti-rating-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ti-widget .ti-rating-score {
+  font-size: 40px !important;
+  line-height: 1 !important;
+  padding-bottom: 3px;
+}
+.ti-widget .ti-rating-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+.ti-widget .ti-rating-stars img {
+  width: 20px;
+  height: 20px;
+}
+.ti-widget .ti-rating-count {
+  color: #7C7C7C;
+}
+.ti-widget .ti-rating-count a {
+  display: inline-block;
+  color: inherit;
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+.ti-widget .ti-rating-count a:hover {
+  transform: scale(1.035);
+}
+.ti-widget .ti-read-more-active {
+  font-size: 15px !important;
 }
 
 .single-post main#content {
