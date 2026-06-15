@@ -16,9 +16,20 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     const locationButtons = document.querySelectorAll('.location-btn');
-    locationButtons.forEach(function (button) {
-        button.querySelector('span.location-name').textContent = window.location.pathname.split('/')[2].split('-')[0];
-    });
+    if (locationButtons.length) {
+        const slug = window.location.pathname.split('/')[2] || '';
+        const parts = slug.split('-');
+        if (parts.length > 1) {
+            parts.pop();
+        }
+        const locationName = parts.join(' ');
+
+        locationButtons.forEach((button) => {
+            const nameEl = button.querySelector('span.location-name');
+            if (!nameEl) { return; }
+            nameEl.textContent = locationName;
+        });
+    }
 
     function autoplaySliders(selector, speed) {
         const sliders = document.querySelectorAll(selector);
