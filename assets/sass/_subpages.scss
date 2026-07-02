@@ -434,11 +434,49 @@ ul.social-icons {
     }
 }
 
+.location-sections, .location-why {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    --columns: 3;
+    gap: var(--gap);
+    .location-section {
+        padding: 20px 20px 40px 20px;
+        box-shadow: variables.$box-shadow;
+        border-radius: variables.$border-radius;
+    }
+    .location-section, .location-why-item {
+        flex-basis: calc((100% / var(--columns)) - (var(--gap) * (var(--columns) - 1) / var(--columns)));
+        @media (min-width: 576px) and (max-width: 1024px) {
+            --columns: 2;
+            h3 {
+                font-size: 23px;
+            }
+            p {
+                font-size: 16px;
+            }
+        }
+        @include mixins.mq-down-sm() {
+            --columns: 1;
+        }
+    }
+    @include mixins.mq-down-lg() {
+        --gap: 20px;
+        gap: var(--gap);
+    }
+}
+
 .location-sections {
-    @media (min-width: 767px) and (max-width: 1024px) {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px 40px;
+    --gap: 40px;
+}
+
+.location-why {
+    --gap: 110px;
+    @media (min-width: 1024px) and (max-width: 1440px) {
+        --gap: 60px;
+    }
+    @include mixins.mq-down-lg() {
+        --gap: 40px;
     }
 }
 
@@ -717,5 +755,63 @@ $colors: #65AABB, #ADCE98, #DF924D, #C15366, #7D95B2, #2087BB, #70B790;
 .elementor-widget-theme-post-content {
     ul, ol {
         margin-bottom: 30px;
+    }
+}
+
+// TrustIndex Reviews Widget
+.ti-widget {
+    &[data-layout-id="16"] {
+        .ti-widget-container {
+            display: flex!important;
+            gap: 32px!important;
+            flex-direction: column;
+            .ti-reviews-container {
+                order: 2;
+            }
+            .ti-footer {
+                order: 1;
+                padding-bottom: 32px !important;
+            }
+        }
+    }
+
+    .ti-rating-text {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .ti-rating-score {
+        font-size: variables.$text-size-xl!important;
+        line-height: 1!important;
+        padding-bottom: 3px;
+    }
+
+    .ti-rating-stars {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 10px;
+
+        img {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .ti-rating-count {
+        color: variables.$gray-600;
+        a {
+            display: inline-block;
+            color: inherit;
+            transition: transform .3s ease-in-out;
+            will-change: transform;
+            &:hover {
+                transform: scale(1.035);
+            }
+        }
+    }
+    .ti-read-more-active {
+        font-size: 15px!important;
     }
 }

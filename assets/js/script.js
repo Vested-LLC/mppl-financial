@@ -10,6 +10,27 @@ window.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.phone-link .elementor-widget-container').appendChild(a);
     }
 
+    const scheduleButtons = document.querySelectorAll('.schedule-btn');
+    scheduleButtons.forEach(function (button) {
+        button.querySelector('a').setAttribute('href', `/schedule-a-call/?ref_location=${window.location.pathname.split('/')[2]}`);
+    });
+
+    const locationButtons = document.querySelectorAll('.location-btn');
+    if (locationButtons.length) {
+        const slug = window.location.pathname.split('/')[2] || '';
+        const parts = slug.split('-');
+        if (parts.length > 1) {
+            parts.pop();
+        }
+        const locationName = parts.join(' ');
+
+        locationButtons.forEach((button) => {
+            const nameEl = button.querySelector('span.location-name');
+            if (!nameEl) { return; }
+            nameEl.textContent = locationName;
+        });
+    }
+
     function autoplaySliders(selector, speed) {
         const sliders = document.querySelectorAll(selector);
 
@@ -770,6 +791,15 @@ window.addEventListener('DOMContentLoaded', function () {
     });
     closeBtn.addEventListener("click", closeMenu);
 
+    // Close the menu on any click outside of the main nav
+    var navInner = navWrapper.querySelector('.nav-inner');
+    document.addEventListener("click", function (e) {
+        if (!navWrapper.classList.contains("js-show")) return;
+        if (navInner.contains(e.target)) return;
+        if (openBtn.contains(e.target)) return;
+        closeMenu();
+    });
+
     // Keyboard navigation: trap focus inside the menu when open
     menu.addEventListener("keydown", function (e) {
         if (e.key === "Tab") {
@@ -792,6 +822,79 @@ window.addEventListener('DOMContentLoaded', function () {
             closeMenu();
         }
     });
+
+    // TrustIndex rating footer — restructure into score + stars + review count
+    const formatTrustindexFooter = (footer) => {
+        if (!footer || footer.classList.contains('js-formatted')) { return; }
+
+        const ratingText = footer.querySelector('.ti-rating-text');
+        if (!ratingText) { return; }
+
+        // Read just the rating value (e.g. "5.0"), independent of span order
+        let score = '';
+        ratingText.querySelectorAll('strong').forEach((strong) => {
+            const value = strong.textContent.trim();
+            if (!score && /^\d+(\.\d+)?$/.test(value)) {
+                score = value;
+            }
+        });
+        if (!score) { return; }
+
+        const reviewsLink = ratingText.querySelector('a');
+
+        // Large rating score
+        const scoreEl = document.createElement('span');
+        scoreEl.className = 'ti-rating-score';
+        scoreEl.textContent = score;
+
+        // Star row (5 full stars)
+        const starsEl = document.createElement('div');
+        starsEl.className = 'ti-rating-stars';
+        starsEl.setAttribute('role', 'img');
+        starsEl.setAttribute('aria-label', `${score} out of 5 stars`);
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement('img');
+            star.src = 'https://cdn.trustindex.io/assets/platform/Google/star/f.svg';
+            star.alt = '';
+            star.width = 20;
+            star.height = 20;
+            star.setAttribute('aria-hidden', 'true');
+            starsEl.appendChild(star);
+        }
+
+        // Review count
+        const countEl = document.createElement('div');
+        countEl.className = 'ti-rating-count';
+        if (reviewsLink) {
+            const a = document.createElement('a');
+            a.href = reviewsLink.href;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.textContent = reviewsLink.textContent.trim();
+            countEl.append('Based on ', a);
+        } else {
+            countEl.textContent = 'Based on reviews';
+        }
+
+        ratingText.textContent = '';
+        ratingText.append(scoreEl, starsEl, countEl);
+        footer.classList.add('js-formatted');
+    };
+
+    const initTrustindexFooters = () => {
+        document.querySelectorAll('.ti-footer:not(.js-formatted)').forEach(formatTrustindexFooter);
+    };
+
+    initTrustindexFooters();
+
+    // The widget is lazyloaded, so watch for its markup and format it once it appears
+    const tiObserver = new MutationObserver(() => {
+        initTrustindexFooters();
+        if (document.querySelector('.ti-footer') && !document.querySelector('.ti-footer:not(.js-formatted)')) {
+            tiObserver.disconnect();
+        }
+    });
+    tiObserver.observe(document.body, { childList: true, subtree: true });
 
     const captchaLabels = document.querySelectorAll('.gfield--type-captcha label');
     captchaLabels.forEach(function(label) {

@@ -1,0 +1,45 @@
+@use "mixins";
+@use "variables";
+@use "helpers";
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    will-change: transform;
+    @include mixins.transition-all(.3s);
+    &.btn-secondary {
+        color: variables.$pool-day;
+        background-color: variables.$white;
+        padding: 0;
+        &:hover {
+            color: variables.$pool-day;
+        }
+    }
+    &:after {
+        content: '';
+        display: inline-block;
+        margin-left: 10px;
+        position: relative;
+        bottom: 3px;
+        width: 16px;
+        height: 16px;
+        background-color: variables.$pool-day;
+        mask-image: url(/wp-content/uploads/2025/02/btn-arrow-right.svg);
+        mask-size: 16px;
+        mask-repeat: no-repeat;
+        mask-position: center;
+    }
+    &:hover, &:focus {
+        transform: scale(1.05);
+    }
+    
+}
+
+// View All [location_name] Buttons on Location Pages
+.location-btn {
+    span.location-name {
+        margin: 0 5px;
+        text-transform: capitalize;
+    }
+}

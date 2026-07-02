@@ -15,14 +15,6 @@ html {
     scroll-padding-top: 100px;
 }
 
-// .fadeInUp {
-//     transform: translateY(30px);
-//     transition: opacity 0.4s ease-in-out;
-//     &.js-visible {
-//         transform: translateY(0);
-//     }
-// }
-
 .full-width-xxl {
     @include mixins.mq-up-xxl() {
         .e-con-inner {
