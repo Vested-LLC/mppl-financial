@@ -28,7 +28,9 @@ while (have_posts()) :
             </div>
             <div class="entry-content__right">
                 <div class="entry-content__right__title">
-                    <?php the_title(); ?>
+                    <h1>
+                        <?php the_title(); ?>
+                    </h1>
                 </div>
                 <div class="entry-content__right__date">
                     Published <?php the_date('F j, Y'); ?>
