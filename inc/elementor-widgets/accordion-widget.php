@@ -36,10 +36,45 @@ class Accordion_Widget extends \Elementor\Widget_Base {
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
         ] );
 
+        $this->add_control( 'source', [
+            'label'   => __( 'Source', 'text-domain' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'acf',
+            'options' => [
+                'acf'    => __( 'Page FAQs (ACF)', 'text-domain' ),
+                'manual' => __( 'Manual Entry', 'text-domain' ),
+            ],
+        ] );
+
         $this->add_control( 'faqs_notice', [
             'type'            => \Elementor\Controls_Manager::RAW_HTML,
             'raw'             => __( 'Items are pulled from the "FAQs" ACF repeater field on the current page.', 'text-domain' ),
             'content_classes' => 'elementor-descriptor',
+            'condition'       => [ 'source' => 'acf' ],
+        ] );
+
+        $repeater = new \Elementor\Repeater();
+
+        $repeater->add_control( 'faq_question', [
+            'label'       => __( 'Question', 'text-domain' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'label_block' => true,
+            'default'     => '',
+        ] );
+
+        $repeater->add_control( 'faq_answer', [
+            'label'   => __( 'Answer', 'text-domain' ),
+            'type'    => \Elementor\Controls_Manager::WYSIWYG,
+            'default' => '',
+        ] );
+
+        $this->add_control( 'manual_faqs', [
+            'label'       => __( 'FAQ Items', 'text-domain' ),
+            'type'        => \Elementor\Controls_Manager::REPEATER,
+            'fields'      => $repeater->get_controls(),
+            'title_field' => '{{{ faq_question }}}',
+            'condition'   => [ 'source' => 'manual' ],
+            'default'     => [],
         ] );
 
         $this->add_control( 'open_first_item', [
@@ -87,11 +122,40 @@ class Accordion_Widget extends \Elementor\Widget_Base {
         return $items;
     }
 
+    /**
+     * Read the widget's manual FAQ repeater into a flat list.
+     *
+     * @param array $settings Widget settings from get_settings_for_display().
+     * @return array List of [ 'question' => string, 'answer' => string ].
+     */
+    protected function get_manual_faq_items( $settings ) {
+        $items = [];
+        $rows  = ! empty( $settings['manual_faqs'] ) ? $settings['manual_faqs'] : [];
+
+        foreach ( $rows as $row ) {
+            $question = ! empty( $row['faq_question'] ) ? $row['faq_question'] : '';
+
+            if ( ! $question ) {
+                continue;
+            }
+
+            $items[] = [
+                'question' => $question,
+                'answer'   => ! empty( $row['faq_answer'] ) ? $row['faq_answer'] : '',
+            ];
+        }
+
+        return $items;
+    }
+
     protected function render() {
-        $open_first = $this->get_settings_for_display( 'open_first_item' ) === 'yes';
+        $settings   = $this->get_settings_for_display();
+        $open_first = $settings['open_first_item'] === 'yes';
         $widget_id  = 'accordion-' . $this->get_id();
 
-        $items = $this->get_acf_faq_items();
+        $items = 'manual' === $settings['source']
+            ? $this->get_manual_faq_items( $settings )
+            : $this->get_acf_faq_items();
 
         if ( empty( $items ) ) {
             return;
