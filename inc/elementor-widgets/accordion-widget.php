@@ -36,10 +36,45 @@ class Accordion_Widget extends \Elementor\Widget_Base {
             'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
         ] );
 
+        $this->add_control( 'source', [
+            'label'   => __( 'Source', 'text-domain' ),
+            'type'    => \Elementor\Controls_Manager::SELECT,
+            'default' => 'acf',
+            'options' => [
+                'acf'    => __( 'Page FAQs (ACF)', 'text-domain' ),
+                'manual' => __( 'Manual Entry', 'text-domain' ),
+            ],
+        ] );
+
         $this->add_control( 'faqs_notice', [
             'type'            => \Elementor\Controls_Manager::RAW_HTML,
             'raw'             => __( 'Items are pulled from the "FAQs" ACF repeater field on the current page.', 'text-domain' ),
             'content_classes' => 'elementor-descriptor',
+            'condition'       => [ 'source' => 'acf' ],
+        ] );
+
+        $repeater = new \Elementor\Repeater();
+
+        $repeater->add_control( 'faq_question', [
+            'label'       => __( 'Question', 'text-domain' ),
+            'type'        => \Elementor\Controls_Manager::TEXT,
+            'label_block' => true,
+            'default'     => '',
+        ] );
+
+        $repeater->add_control( 'faq_answer', [
+            'label'   => __( 'Answer', 'text-domain' ),
+            'type'    => \Elementor\Controls_Manager::WYSIWYG,
+            'default' => '',
+        ] );
+
+        $this->add_control( 'manual_faqs', [
+            'label'       => __( 'FAQ Items', 'text-domain' ),
+            'type'        => \Elementor\Controls_Manager::REPEATER,
+            'fields'      => $repeater->get_controls(),
+            'title_field' => '{{{ faq_question }}}',
+            'condition'   => [ 'source' => 'manual' ],
+            'default'     => [],
         ] );
 
         $this->add_control( 'open_first_item', [
@@ -54,28 +89,80 @@ class Accordion_Widget extends \Elementor\Widget_Base {
         $this->end_controls_section();
     }
 
-    protected function render() {
-        $open_first = $this->get_settings_for_display( 'open_first_item' ) === 'yes';
-        $widget_id  = 'accordion-' . $this->get_id();
+    /**
+     * Read the page's ACF "faqs" repeater into a flat list.
+     *
+     * @return array List of [ 'question' => string, 'answer' => string ].
+     */
+    protected function get_acf_faq_items() {
+        $items = [];
 
         $post_id = get_queried_object_id();
         if ( empty( $post_id ) ) {
             $post_id = get_the_ID();
         }
 
-        if ( ! have_rows( 'faqs', $post_id ) ) return;
+        if ( ! have_rows( 'faqs', $post_id ) ) {
+            return $items;
+        }
+
+        while ( have_rows( 'faqs', $post_id ) ) : the_row();
+            $question = get_sub_field( 'faq_question' );
+
+            if ( ! $question ) {
+                continue;
+            }
+
+            $items[] = [
+                'question' => $question,
+                'answer'   => get_sub_field( 'faq_answer' ),
+            ];
+        endwhile;
+
+        return $items;
+    }
+
+    /**
+     * Read the widget's manual FAQ repeater into a flat list.
+     *
+     * @param array $settings Widget settings from get_settings_for_display().
+     * @return array List of [ 'question' => string, 'answer' => string ].
+     */
+    protected function get_manual_faq_items( $settings ) {
+        $items = [];
+        $rows  = ! empty( $settings['manual_faqs'] ) ? $settings['manual_faqs'] : [];
+
+        foreach ( $rows as $row ) {
+            $question = ! empty( $row['faq_question'] ) ? $row['faq_question'] : '';
+
+            if ( ! $question ) {
+                continue;
+            }
+
+            $items[] = [
+                'question' => $question,
+                'answer'   => ! empty( $row['faq_answer'] ) ? $row['faq_answer'] : '',
+            ];
+        }
+
+        return $items;
+    }
+
+    protected function render() {
+        $settings   = $this->get_settings_for_display();
+        $open_first = $settings['open_first_item'] === 'yes';
+        $widget_id  = 'accordion-' . $this->get_id();
+
+        $items = 'manual' === $settings['source']
+            ? $this->get_manual_faq_items( $settings )
+            : $this->get_acf_faq_items();
+
+        if ( empty( $items ) ) {
+            return;
+        }
         ?>
         <div class="accordion" id="<?php echo esc_attr( $widget_id ); ?>">
-            <?php $index = 0; ?>
-            <?php while ( have_rows( 'faqs', $post_id ) ) : the_row();
-                $faq_question = get_sub_field( 'faq_question' );
-                $faq_answer   = get_sub_field( 'faq_answer' );
-
-                if ( ! $faq_question ) {
-                    $index++;
-                    continue;
-                }
-
+            <?php foreach ( $items as $index => $item ) :
                 $item_id  = $widget_id . '-' . $index;
                 $btn_id   = $item_id . '-btn';
                 $panel_id = $item_id . '-panel';
@@ -90,7 +177,7 @@ class Accordion_Widget extends \Elementor\Widget_Base {
                         aria-expanded="<?php echo $is_open ? 'true' : 'false'; ?>"
                         aria-controls="<?php echo esc_attr( $panel_id ); ?>"
                     >
-                        <span class="accordion__title"><?php echo esc_html( $faq_question ); ?></span>
+                        <span class="accordion__title"><?php echo esc_html( $item['question'] ); ?></span>
                         <span class="accordion__icon" aria-hidden="true">
                             <svg class="accordion__icon-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                             <svg class="accordion__icon-close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -105,12 +192,11 @@ class Accordion_Widget extends \Elementor\Widget_Base {
                     <?php echo ! $is_open ? 'hidden' : ''; ?>
                 >
                     <div class="accordion__content">
-                        <?php echo wp_kses_post( $faq_answer ); ?>
+                        <?php echo wp_kses_post( $item['answer'] ); ?>
                     </div>
                 </div>
             </div>
-            <?php $index++; ?>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
 
         <script>
