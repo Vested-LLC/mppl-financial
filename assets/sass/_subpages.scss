@@ -623,6 +623,8 @@ $colors: #65AABB, #ADCE98, #DF924D, #C15366, #7D95B2, #2087BB, #70B790;
         }
         img {
             padding: 20px 0 20px 20px;
+            aspect-ratio: 345 / 250;
+            object-fit: cover;
         }
         &__bottom {
             padding: 0 20px 40px 20px;
