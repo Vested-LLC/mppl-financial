@@ -758,6 +758,22 @@ $colors: #65AABB, #ADCE98, #DF924D, #C15366, #7D95B2, #2087BB, #70B790;
     ul, ol {
         margin-bottom: 30px;
     }
+    h2 {
+        font-size: 30px;
+        color: variables.$primary;
+    }
+    h3 {
+        font-size: 24px;
+    }
+    h4 {
+        font-size: 22px;
+    }
+    h5 {
+        font-size: 20px;
+    }
+    p {
+        font-size: 18px;
+    }
 }
 
 // TrustIndex Reviews Widget
