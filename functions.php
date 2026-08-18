@@ -31,6 +31,16 @@ add_action( 'wp_enqueue_scripts', 'hello_elementor_child_enqueue_scripts' );
 
 add_filter( 'elementor/frontend/print_google_fonts', '__return_false' );
 
+/**
+ * Output the Google Search Console site verification tag in the head
+ *
+ * @return void
+ */
+function hello_elementor_child_gsc_verification() {
+    echo '<meta name="google-site-verification" content="vGacmS6ZNIMiWauRrlalzyyF4PdEkjuv_a0pZoRK4N8" />' . "\n";
+}
+add_action( 'wp_head', 'hello_elementor_child_gsc_verification', 1 );
+
 // Include Elementor custom widgets
 require_once get_stylesheet_directory() . '/inc/elementor-widgets/register-widgets.php';
 
