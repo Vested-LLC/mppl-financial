@@ -1,0 +1,164 @@
+@use "variables";
+@use "mixins";
+
+.awards-slider {
+    width: 100%;
+    &__swiper {
+        padding: variables.$spacing-md variables.$spacing-md variables.$spacing-lg !important;
+    }
+
+    &__slide {
+        height: auto;
+        display: flex;
+    }
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: variables.$spacing-md;
+        background-color: variables.$white;
+        border-radius: variables.$border-radius;
+        box-shadow: none;
+        text-align: center;
+        transition: box-shadow .3s ease-in-out;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+
+        &--link {
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow .3s ease-in-out, transform .3s ease-in-out;
+
+            &:hover,
+            &:focus {
+                transform: translateY(-4px);
+
+                .awards-slider__name {
+                    text-decoration: underline;
+                }
+            }
+
+            &:focus-visible {
+                outline: 2px solid variables.$primary;
+                outline-offset: 3px;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                transition: none;
+
+                &:hover,
+                &:focus {
+                    transform: none;
+                }
+            }
+        }
+    }
+
+    .swiper-slide-visible &__card {
+        box-shadow: variables.$box-shadow;
+    }
+
+    &__figure {
+        display: flex;
+        flex-grow: 1;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-block-end: variables.$spacing-md;
+    }
+
+    &__image {
+        display: block;
+        width: 100%;
+        height: auto !important;
+        max-width: 210px !important;
+    }
+
+    &__name {
+        margin: 0;
+        font-size: variables.$text-size-md;
+        line-height: 1.4;
+        color: variables.$primary;
+
+        @include mixins.mq-down-sm {
+            font-size: variables.$text-size-base;
+        }
+    }
+
+    &__pagination {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100%;
+        line-height: 0;
+        text-align: center;
+        margin-block-end: variables.$spacing-lg;
+
+        .swiper-pagination-bullet {
+            opacity: 1;
+            width: 10px;
+            height: 10px;
+            border: 1px solid variables.$primary;
+            background-color: transparent;
+            margin: 0 variables.$spacing-none;
+            @include mixins.transition-all(.3s);
+
+            &.swiper-pagination-bullet-active {
+                background-color: variables.$primary;
+            }
+
+            &:hover {
+                transform: scale(1.1);
+            }
+
+            &:focus-visible {
+                outline: 2px solid variables.$primary;
+                outline-offset: 2px;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                transition: none;
+
+                &:hover {
+                    transform: none;
+                }
+            }
+        }
+
+        &.swiper-pagination-lock {
+            display: none;
+        }
+    }
+
+    &__disclaimer {
+        margin-block-start: variables.$spacing-md;
+        padding-inline: variables.$spacing-md;
+        font-size: variables.$text-size-base;
+        line-height: 1.6;
+        color: variables.$text;
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        a {
+            color: variables.$primary;
+            text-decoration: underline;
+
+            &:hover,
+            &:focus {
+                color: variables.$primary;
+                text-decoration: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid variables.$primary;
+                outline-offset: 2px;
+            }
+        }
+    }
+}
