@@ -7,9 +7,15 @@
         padding: variables.$spacing-md variables.$spacing-md variables.$spacing-lg !important;
     }
 
+    // Swiper sets slides to height: 100%; auto lets the flex wrapper stretch every slide to the tallest.
+    .swiper-wrapper {
+        align-items: stretch;
+    }
+
     &__slide {
-        height: auto;
+        height: auto !important;
         display: flex;
+        align-items: stretch;
     }
 
     &__card {
