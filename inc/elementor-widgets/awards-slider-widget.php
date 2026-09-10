@@ -89,6 +89,44 @@ class Awards_Slider_Widget extends \Elementor\Widget_Base {
         ] );
 
         $this->end_controls_section();
+
+        $this->start_controls_section( 'autoplay_section', [
+            'label' => __( 'Autoplay', 'text-domain' ),
+            'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+        ] );
+
+        $this->add_control( 'autoplay', [
+            'label'        => __( 'Autoplay', 'text-domain' ),
+            'description'  => __( 'Starts only once the slider scrolls into view.', 'text-domain' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Yes', 'text-domain' ),
+            'label_off'    => __( 'No', 'text-domain' ),
+            'return_value' => 'yes',
+            'default'      => 'yes',
+        ] );
+
+        $this->add_control( 'autoplay_delay', [
+            'label'       => __( 'Delay Between Slides (ms)', 'text-domain' ),
+            'description' => __( 'How long each slide stays on screen before advancing.', 'text-domain' ),
+            'type'        => \Elementor\Controls_Manager::NUMBER,
+            'min'         => 1000,
+            'max'         => 20000,
+            'step'        => 500,
+            'default'     => 4000,
+            'condition'   => [ 'autoplay' => 'yes' ],
+        ] );
+
+        $this->add_control( 'autoplay_pause_on_hover', [
+            'label'        => __( 'Pause on Hover', 'text-domain' ),
+            'type'         => \Elementor\Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Yes', 'text-domain' ),
+            'label_off'    => __( 'No', 'text-domain' ),
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'condition'    => [ 'autoplay' => 'yes' ],
+        ] );
+
+        $this->end_controls_section();
     }
 
     /**
@@ -128,6 +166,10 @@ class Awards_Slider_Widget extends \Elementor\Widget_Base {
         $swiper_id  = $widget_id . '-swiper';
         $items      = $this->get_award_items( $settings );
         $disclaimer = ! empty( $settings['disclaimer'] ) ? $settings['disclaimer'] : '';
+
+        $autoplay       = ! empty( $settings['autoplay'] ) && 'yes' === $settings['autoplay'];
+        $autoplay_delay = ! empty( $settings['autoplay_delay'] ) ? max( 1000, (int) $settings['autoplay_delay'] ) : 4000;
+        $pause_on_hover = ! empty( $settings['autoplay_pause_on_hover'] ) && 'yes' === $settings['autoplay_pause_on_hover'];
 
         if ( empty( $items ) ) {
             return;
@@ -185,8 +227,23 @@ class Awards_Slider_Widget extends \Elementor\Widget_Base {
                 if (el.swiper || typeof Swiper === 'undefined') { return; }
 
                 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const names = Array.from(el.querySelectorAll('.awards-slider__name'));
+                const autoplayDelay = <?php echo (int) $autoplay_delay; ?>;
+                const pauseOnHover = <?php echo $pause_on_hover ? 'true' : 'false'; ?>;
+                const autoplayEnabled = <?php echo $autoplay ? 'true' : 'false'; ?> && !reduceMotion;
 
-                new Swiper(el, {
+                const equalizeNames = () => {
+                    if (!names.length) { return; }
+                    wrap.style.setProperty('--awards-slider-name-height', 'auto');
+                    const tallest = Math.max(...names.map((name) => name.offsetHeight));
+                    wrap.style.setProperty('--awards-slider-name-height', `${tallest}px`);
+                };
+
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(equalizeNames);
+                }
+
+                const swiper = new Swiper(el, {
                     slidesPerView: 1,
                     spaceBetween: 20,
                     speed: reduceMotion ? 0 : 600,
@@ -195,6 +252,12 @@ class Awards_Slider_Widget extends \Elementor\Widget_Base {
                     watchOverflow: true,
                     watchSlidesProgress: true,
                     centerInsufficientSlides: true,
+                    autoplay: {
+                        enabled: false,
+                        delay: autoplayDelay,
+                        disableOnInteraction: false,
+                        pauseOnMouseEnter: false
+                    },
                     keyboard: {
                         enabled: true,
                         onlyInViewport: true
@@ -216,8 +279,72 @@ class Awards_Slider_Widget extends \Elementor\Widget_Base {
                         576: { slidesPerView: 2 },
                         1025: { slidesPerView: 3 },
                         1200: { slidesPerView: 4 }
+                    },
+                    on: {
+                        init: equalizeNames,
+                        resize: equalizeNames
                     }
                 });
+
+                if (!autoplayEnabled || !swiper.autoplay) { return; }
+
+                // Older Swiper builds ignore `enabled: false` and start on init.
+                if (swiper.autoplay.running) {
+                    swiper.autoplay.stop();
+                }
+
+                const state = {
+                    inView: false,
+                    hovered: false,
+                    focused: false
+                };
+
+                // Autoplay runs only while every condition holds; any single one stops it.
+                const syncAutoplay = () => {
+                    const shouldRun = state.inView
+                        && !state.hovered
+                        && !state.focused
+                        && !swiper.isLocked
+                        && !document.hidden;
+
+                    if (shouldRun && !swiper.autoplay.running) {
+                        swiper.autoplay.start();
+                    } else if (!shouldRun && swiper.autoplay.running) {
+                        swiper.autoplay.stop();
+                    }
+                };
+
+                if (pauseOnHover) {
+                    el.addEventListener('mouseenter', () => { state.hovered = true; syncAutoplay(); });
+                    el.addEventListener('mouseleave', () => { state.hovered = false; syncAutoplay(); });
+                }
+
+                // Keyboard users need the slides to hold still while they tab through the cards.
+                el.addEventListener('focusin', () => { state.focused = true; syncAutoplay(); });
+                el.addEventListener('focusout', (event) => {
+                    if (el.contains(event.relatedTarget)) { return; }
+                    state.focused = false;
+                    syncAutoplay();
+                });
+
+                document.addEventListener('visibilitychange', syncAutoplay);
+                swiper.on('lock', syncAutoplay);
+                swiper.on('unlock', syncAutoplay);
+
+                if ('IntersectionObserver' in window) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach((entry) => {
+                            state.inView = entry.isIntersecting;
+                            syncAutoplay();
+                        });
+                    }, { threshold: 0.5 });
+
+                    observer.observe(wrap);
+                } else {
+                    state.inView = true;
+                }
+
+                syncAutoplay();
             };
 
             if (document.readyState === 'loading') {
